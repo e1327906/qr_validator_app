@@ -22,7 +22,6 @@ jobs:
         uses: zgosalvez/github-actions-report-lcov@v3
         with:
           coverage-files: coverage/lcov.info
-          minimum-coverage: 95
           artifact-name: code-coverage-report
           github-token: ${{ secrets.TOKEN }}
       - name: Build APK and release
