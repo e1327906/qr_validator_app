@@ -16,7 +16,7 @@ jobs:
     - run: flutter test
     - run: flutter build apk --debug --split-per-abi
     - name: Push APK to Releases
-      uses: actions/upload-artifact@v2
+      uses: softprops/action-gh-release@v1
       with:
         artifacts: "build/app/outputs/apk/debug/*.apk"
         token: ${{ secrets.TOKEN }}
