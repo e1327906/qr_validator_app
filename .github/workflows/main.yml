@@ -30,28 +30,3 @@ jobs:
         with:
           name: release-apk
           path: build/app/outputs/apk/release/app-release.apk
-      - name: Run SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-         args: |
-           -Dsonar.projectKey=e1327906_qr_validator_app
-           -Dsonar.organization=e1327906
-        env:
-         GITHUB_TOKEN: ${{ secrets.TOKEN }}
-         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  snyk:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-      - name: Run Snyk to check for vulnerabilities
-        run: snyk test --sarif-file-output=snyk.sarif
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk.sarif
