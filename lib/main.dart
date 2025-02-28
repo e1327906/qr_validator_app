@@ -36,8 +36,35 @@ class MyApp extends StatelessWidget {
     return Authenticator(
       // Set initial step to sign in
       initialStep: AuthenticatorStep.signIn,
-      // Disable sign up functionality by setting it to null
-      signUpForm: null,
+      authenticatorBuilder: (context, state) {
+        if (state.currentStep == AuthenticatorStep.signIn) {
+          return Scaffold(
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0), // Left and right padding
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+                  children: [
+                    // Logo at the top
+                    Image.asset(
+                      'assets/animations/logo.png', // Replace with your logo path
+                      height: 100, // Adjust the size as needed
+                    ),
+                    const SizedBox(height: 20), // Add some space between logo and text
+                    const Text(
+                      'AFC Staff Sign In',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20), // Add space between text and sign-in form
+                    SignInForm(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        return null; // Default Authenticator UI for web
+      },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         builder: Authenticator.builder(),
