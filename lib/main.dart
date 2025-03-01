@@ -48,9 +48,9 @@ class MyApp extends StatelessWidget {
                     // Logo at the top
                     Image.asset(
                       'assets/animations/logo.png', // Replace with your logo path
-                      height: 100, // Adjust the size as needed
+                      height: 90, // Adjust the size as needed
                     ),
-                    const SizedBox(height: 20), // Add some space between logo and text
+                    const SizedBox(height: 10), // Add some space between logo and text
                     const Text(
                       'AFC Staff Sign In',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
