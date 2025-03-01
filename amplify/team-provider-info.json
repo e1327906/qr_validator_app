@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-qrvalidatorapp-dev-66723-authRole",
+      "UnauthRoleArn": "arn:aws:iam::471112712033:role/amplify-qrvalidatorapp-dev-66723-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::471112712033:role/amplify-qrvalidatorapp-dev-66723-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-qrvalidatorapp-dev-66723-deployment",
+      "UnauthRoleName": "amplify-qrvalidatorapp-dev-66723-unauthRole",
+      "StackName": "amplify-qrvalidatorapp-dev-66723",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:471112712033:stack/amplify-qrvalidatorapp-dev-66723/897050b0-f59b-11ef-9dba-0a0275521879",
+      "AmplifyAppId": "d3kzi01flsoeco"
+    },
+    "categories": {
+      "auth": {
+        "qrvalidatorapp0846a340": {}
+      }
+    }
+  }
+}
