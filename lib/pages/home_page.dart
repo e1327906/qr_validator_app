@@ -1,9 +1,16 @@
 // home_page.dart
+import 'dart:convert';
+
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_validator_app/pages/entry_page.dart';
 import 'package:qr_validator_app/pages/exit_page.dart';
 import 'package:qr_validator_app/pages/setting_page.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'auth_failure_page.dart';
+import 'fare_calculator_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,12 +21,43 @@ class HomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<HomePage> {
   String username = 'User';
+  String userGroup = 'No group';
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserInfo();
+    _fetchUserGroup();
+  }
+
+  Future<void> _fetchUserGroup() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+
+      // Fetch session and tokens
+      final session = await Amplify.Auth.fetchAuthSession(
+        options: FetchAuthSessionOptions(),
+      );
+
+      if (session is CognitoAuthSession) {
+        final idToken = session.userPoolTokensResult.value.idToken.raw;
+        userGroup = _extractUserGroup(idToken);  // Extract the user group from the ID token
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("idToken", idToken);
+
+        // Immediately check the user group after getting the session
+        _checkUserGroup(userGroup);
+      }
+
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> _fetchUserInfo() async {
@@ -28,12 +66,14 @@ class _MyHomePageState extends State<HomePage> {
     });
 
     try {
+      // Get the current user and attributes
       final user = await Amplify.Auth.getCurrentUser();
       final attributes = await Amplify.Auth.fetchUserAttributes();
 
+      // Extract username (email in this case) from the attributes
       String name = 'User';
       for (final attribute in attributes) {
-        if (attribute.userAttributeKey.key == 'name') {
+        if (attribute.userAttributeKey.key == 'email') {
           name = attribute.value;
           break;
         }
@@ -48,6 +88,44 @@ class _MyHomePageState extends State<HomePage> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+  void _checkUserGroup(String userGroup) {
+    // Immediately check if user is in the correct group
+    if (!userGroup.contains('ROLE_OPERATOR')) {
+      _showAuthFailure(); // Show failure if they don't belong to the required group
+    }else{
+      _fetchUserInfo();
+    }
+  }
+
+  void _showAuthFailure() {
+    // Replace all previous routes with the auth failure page
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => AuthFailurePage(onSignOut: _signOut),
+      ),
+          (route) => false, // This predicate returns false for all routes, removing them all
+    );
+  }
+
+  String _extractUserGroup(String idToken) {
+    try {
+      final parts = idToken.split('.');
+      if (parts.length != 3) {
+        return 'Invalid Token';
+      }
+
+      final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+      final Map<String, dynamic> decodedToken = jsonDecode(payload);
+
+      if (decodedToken.containsKey('cognito:groups')) {
+        return decodedToken['cognito:groups'].toString();
+      } else {
+        return 'No group assigned';
+      }
+    } catch (e) {
+      return 'Error decoding token';
     }
   }
 
@@ -118,11 +196,24 @@ class _MyHomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Welcome, $username',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Welcome, ',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20, // Font size for username
+                        ),
+                      ),
+                      Text(
+                        username.substring(0, username.indexOf('@')),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15, // Font size for username
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -172,7 +263,10 @@ class _MyHomePageState extends State<HomePage> {
                       icon: Icons.monetization_on,
                       color: Colors.blue,
                       onTap: () {
-                        // Add reports functionality
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => FareCalculatorPage()),
+                        );
                       },
                     ),
                     _buildMenuCard(

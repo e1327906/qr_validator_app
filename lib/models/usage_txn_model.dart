@@ -26,6 +26,6 @@ class UsageTxnModel {
         kQRData: qrData,
         kStatus: status,
         kEntryDateTime: entryDateTime,
-        kExitDateTime: exitDateTime
+        kExitDateTime: exitDateTime,
       };
 }
