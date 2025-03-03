@@ -5,11 +5,13 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_validator_app/pages/entry_page.dart';
 import 'package:qr_validator_app/pages/exit_page.dart';
+import 'package:qr_validator_app/pages/request_password_reset_page.dart';
 import 'package:qr_validator_app/pages/setting_page.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'auth_failure_page.dart';
+import 'confirm_password_reset_page.dart';
 import 'fare_calculator_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -227,7 +229,7 @@ class _MyHomePageState extends State<HomePage> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(16.0),
                 child: GridView.count(
                   crossAxisCount: 2,
                   crossAxisSpacing: 20,
@@ -271,11 +273,14 @@ class _MyHomePageState extends State<HomePage> {
                     ),
                     _buildMenuCard(
                       context,
-                      title: 'History',
-                      icon: Icons.history,
+                      title: 'Password Reset',
+                      icon: Icons.lock_reset_outlined,
                       color: Colors.purple,
                       onTap: () {
-                        // Add history functionality
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RequestPasswordResetPage( username: username)),
+                        );
                       },
                     ),
                   ],
@@ -316,7 +321,7 @@ class _MyHomePageState extends State<HomePage> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -332,11 +337,12 @@ class _MyHomePageState extends State<HomePage> {
                   color: color,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 0),
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 12
                 ),
                 textAlign: TextAlign.center,
               ),
