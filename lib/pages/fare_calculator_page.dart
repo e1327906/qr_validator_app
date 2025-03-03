@@ -1,15 +1,25 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:qr_validator_app/models/fare_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/constants.dart';
+import '../models/json_property_name.dart';
+import '../models/response_model.dart';
+import '../models/usage_txn_model.dart';
+import '../service/base_api_service.dart';
 
 class FareCalculatorPage extends StatefulWidget {
+  const FareCalculatorPage({super.key});
+
   @override
   _FareCalculatorPageState createState() => _FareCalculatorPageState();
 }
 
 class _FareCalculatorPageState extends State<FareCalculatorPage> {
 
-
+  bool isLoading = false; // Track loading state
   // Selected values
   String? selectedSrcStnId;
   String? selectedDestStnId;
@@ -17,7 +27,7 @@ class _FareCalculatorPageState extends State<FareCalculatorPage> {
   String? selectedJourneyType;
   String? selectedGroupSize;
 
-  double? fareAmount; // Stores the calculated fare
+  int? fareAmount; // Stores the calculated fare
 
   @override
   Widget build(BuildContext context) {
@@ -32,19 +42,19 @@ class _FareCalculatorPageState extends State<FareCalculatorPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildDropdown("Select Source Station", Icons.train, stationIds, selectedSrcStnId, (value) {
+            buildDropdown("Source Station", Icons.train, stationIds, selectedSrcStnId, (value) {
               setState(() => selectedSrcStnId = value);
             }),
-            buildDropdown("Select Destination Station", Icons.location_on, stationIds, selectedDestStnId, (value) {
+            buildDropdown("Destination Station", Icons.location_on, stationIds, selectedDestStnId, (value) {
               setState(() => selectedDestStnId = value);
             }),
-            buildDropdown("Choose Ticket Type", Icons.confirmation_number, ticketTypes, selectedTicketType, (value) {
+            buildDropdown("Ticket Type", Icons.confirmation_number, ticketTypes, selectedTicketType, (value) {
               setState(() => selectedTicketType = value);
             }),
-            buildDropdown("Select Journey Type", Icons.directions, journeyTypes, selectedJourneyType, (value) {
+            buildDropdown("Journey Type", Icons.directions, journeyTypes, selectedJourneyType, (value) {
               setState(() => selectedJourneyType = value);
             }),
-            buildDropdown("Choose Group Size", Icons.group, groupSizes, selectedGroupSize, (value) {
+            buildDropdown("Group Size", Icons.group, groupSizes, selectedGroupSize, (value) {
               setState(() => selectedGroupSize = value);
             }),
 
@@ -53,14 +63,19 @@ class _FareCalculatorPageState extends State<FareCalculatorPage> {
             // Calculate Fare Button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: calculateFare,
-                icon: const Icon(Icons.attach_money),
-                label: const Text("Calculate Fare", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: ElevatedButton(
+                onPressed: isLoading ? null : calculateFare,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.green,
                 ),
+                child: isLoading
+                    ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                )
+                    : const Text("Calculate Fare", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
 
@@ -134,37 +149,81 @@ class _FareCalculatorPageState extends State<FareCalculatorPage> {
       // Show error message if any field is missing
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please select all fields before calculating the fare."),
+          content: Text(
+              "Please select all fields before calculating the fare."),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
+    FareModel fareModel = FareModel(
+        srcStnId: int.parse(selectedSrcStnId!),
+        destStnId: int.parse(selectedDestStnId!),
+        ticketType: int.parse(selectedTicketType!),
+        journeyType: int.parse(selectedJourneyType!),
+        groupSize: int.parse(selectedGroupSize!));
+
+    getFare(fareModel);
+
+  }
+
+  Future<void> getFare(FareModel req) async {
     setState(() {
-      // Basic fare calculation formula (adjust as needed)
-      fareAmount = 5.0 +
-          (int.parse(selectedDestStnId!) - int.parse(selectedSrcStnId!)).abs() * 2.5;
-
-      // Modify fare based on ticket type
-      if (selectedTicketType == "2") fareAmount = fareAmount! * 1.2; // Premium
-      if (selectedTicketType == "3") fareAmount = fareAmount! * 1.5; // Luxury
-
-      // Round trip costs double
-      if (selectedJourneyType == "2") fareAmount = fareAmount! * 2; // Return Trip
-
-      // Multiply by group size
-      if (selectedGroupSize == "2") fareAmount = fareAmount! * 1.5; // Couple
-      if (selectedGroupSize == "3") fareAmount = fareAmount! * 2; // Family
-      if (selectedGroupSize == "4") fareAmount = fareAmount! * 3; // Group
+      isLoading = true; // Start loading
     });
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? storedUrl = prefs.getString(kTgsEndpoint);
+      String url;
+      if (storedUrl != null && storedUrl.isNotEmpty) {
+        url = storedUrl;
+      } else {
+        url = BaseAPIService.tgsUrl;
+      }
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Fare calculated successfully!"),
-        backgroundColor: Colors.green,
-      ),
-    );
+      BaseAPIService.baseUrl = url;
+      ResponseModel responseModel = await BaseAPIService.post(req.toJson(), kCalculateTrainFare);
+
+      if (responseModel.responseCode == "200") {
+
+        setState(() {
+          // Basic fare calculation formula (adjust as needed)
+          fareAmount = responseModel.responseData["fare"];
+          isLoading = false; // Stop loading
+        });
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Fare calculated successfully!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        setState(() => isLoading = false);
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Fare calculated failed!"),
+            backgroundColor: Colors.red,
+          ),
+        );
+
+        log('Transaction failed');
+        throw Exception('Transaction failed');
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
+      // Log the exception
+      log('Exception during transaction process: $e');
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Fare calculated failed!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

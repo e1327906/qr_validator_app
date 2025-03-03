@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:qr_validator_app/models/json_property_name.dart';
 import 'package:qr_validator_app/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,8 +14,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPage extends State<SettingPage> {
-  TextEditingController _urlController = TextEditingController(); // Controller for the URL TextField
-
+  TextEditingController qrsEndpointController = TextEditingController(); // Controller for the URL TextField
+  TextEditingController tgsEndpointController = TextEditingController(); // Controller for the URL TextField
   @override
   void initState() {
     super.initState();
@@ -23,22 +24,34 @@ class _SettingPage extends State<SettingPage> {
 
   Future<void> init() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? storedUrl = prefs.getString("url");
-    if (storedUrl != null && storedUrl.isNotEmpty) {
+    String? qrsEndpoint = prefs.getString(kQrsEndpoint);
+    if (qrsEndpoint != null && qrsEndpoint.isNotEmpty) {
       setState(() {
-        _urlController.text = storedUrl;
+        qrsEndpointController.text = qrsEndpoint;
       });
 
     } else {
       setState(() {
-        _urlController.text = BaseAPIService.url;
+        qrsEndpointController.text = BaseAPIService.qrsUrl;
+      });
+    }
+
+    String? tgsEndpoint = prefs.getString(kTgsEndpoint);
+    if (tgsEndpoint != null && tgsEndpoint.isNotEmpty) {
+      setState(() {
+        tgsEndpointController.text = tgsEndpoint;
+      });
+
+    } else {
+      setState(() {
+        tgsEndpointController.text = BaseAPIService.tgsUrl;
       });
     }
   }
 
   @override
   void dispose() {
-    _urlController
+    qrsEndpointController
         .dispose(); // Dispose of the controller when the widget is disposed
     super.dispose();
   }
@@ -68,10 +81,23 @@ class _SettingPage extends State<SettingPage> {
             children: [
               const SizedBox(height: 20),
               TextField(
-                controller: _urlController,
+                controller: qrsEndpointController,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'Enter Backend Server URL', // Label for the TextField
+                  labelText: 'Enter QR Server URL', // Label for the TextField
+                  border: OutlineInputBorder(), // Add border to the TextField
+                  labelStyle: TextStyle(
+                      fontSize: 13), // Set font size for the label
+                ),
+                style: const TextStyle(
+                    fontSize: 13), // Set font size for the input text
+              ),
+              const SizedBox(height: 20), // Add spacing below the TextField
+              TextField(
+                controller: tgsEndpointController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Enter TG Server URL', // Label for the TextField
                   border: OutlineInputBorder(), // Add border to the TextField
                   labelStyle: TextStyle(
                       fontSize: 13), // Set font size for the label
@@ -83,9 +109,11 @@ class _SettingPage extends State<SettingPage> {
               ElevatedButton(
                 onPressed: () async {
                   // Add your save action here
-                  String url = _urlController.text;
+                  String qrsEndpoint = qrsEndpointController.text;
+                  String tgsEndpoint = tgsEndpointController.text;
                   SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString("url", url);
+                  prefs.setString(kQrsEndpoint, qrsEndpoint);
+                  prefs.setString(kTgsEndpoint, tgsEndpoint);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const HomePage()),

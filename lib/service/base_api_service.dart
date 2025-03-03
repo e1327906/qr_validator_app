@@ -7,7 +7,8 @@ import '../../models/response_model.dart';
 import '../models/json_property_name.dart';
 
 class BaseAPIService{
-  static String url = GlobalConfiguration().getValue(kMbeEndpoint);
+  static String qrsUrl = GlobalConfiguration().getValue(kQrsEndpoint);
+  static String tgsUrl = GlobalConfiguration().getValue(kTgsEndpoint);
 
   BaseAPIService._();
 

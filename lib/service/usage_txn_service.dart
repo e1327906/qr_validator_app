@@ -10,7 +10,7 @@ class UsageTxnService {
 
   Future<bool> validateTxn(UsageTxnModel req) async {
     try {
-      BaseAPIService.baseUrl = BaseAPIService.url;
+      BaseAPIService.baseUrl = BaseAPIService.qrsUrl;
       ResponseModel responseModel = await BaseAPIService.post(req.toJson(), kValidate);
 
       if (responseModel.responseCode == "200") {

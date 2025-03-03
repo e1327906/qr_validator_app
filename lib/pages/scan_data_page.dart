@@ -168,12 +168,12 @@ class _ScanDataPageState extends State<ScanDataPage> with SingleTickerProviderSt
   Future<bool> validateTxn(UsageTxnModel req) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? storedUrl = prefs.getString("url");
+      String? storedUrl = prefs.getString(kQrsEndpoint);
       String url;
       if (storedUrl != null && storedUrl.isNotEmpty) {
         url = storedUrl;
       } else {
-        url = BaseAPIService.url;
+        url = BaseAPIService.qrsUrl;
       }
 
       BaseAPIService.baseUrl = url;
@@ -196,12 +196,12 @@ class _ScanDataPageState extends State<ScanDataPage> with SingleTickerProviderSt
   Future<void> _getTicketDetails() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? storedUrl = prefs.getString("url");
+      String? storedUrl = prefs.getString(kQrsEndpoint);
       String url;
       if (storedUrl != null && storedUrl.isNotEmpty) {
         url = storedUrl;
       } else {
-        url = BaseAPIService.url;
+        url = BaseAPIService.qrsUrl;
       }
 
       BaseAPIService.baseUrl = url;

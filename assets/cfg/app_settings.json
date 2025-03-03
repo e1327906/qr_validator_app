@@ -1,3 +1,4 @@
 {
-  "api_endpoint": "http://192.168.50.169:5500/tg_query_api/api/v1/validator/"
+  "qrs_endpoint": "http://192.168.50.169:5500/qr_val_api/api/v1/validator/",
+  "tgs_endpoint": "http://172.16.132.249:8071/qr_gen_api/api/v1/fares/"
 }
