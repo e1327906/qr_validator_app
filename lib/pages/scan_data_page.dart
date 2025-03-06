@@ -51,8 +51,8 @@ class _ScanDataPageState extends State<ScanDataPage> with SingleTickerProviderSt
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Encrypted Data'),
             Tab(text: 'Plain Data'),
+            Tab(text: 'Encrypted Data'),
           ],
         ),
       ),

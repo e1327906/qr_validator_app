@@ -5,6 +5,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_validator_app/pages/entry_page.dart';
 import 'package:qr_validator_app/pages/exit_page.dart';
+import 'package:qr_validator_app/pages/password_change_page.dart';
 import 'package:qr_validator_app/pages/request_password_reset_page.dart';
 import 'package:qr_validator_app/pages/setting_page.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -273,13 +274,13 @@ class _MyHomePageState extends State<HomePage> {
                     ),
                     _buildMenuCard(
                       context,
-                      title: 'Password Reset',
+                      title: 'Password Change',
                       icon: Icons.lock_reset_outlined,
                       color: Colors.purple,
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RequestPasswordResetPage( username: username)),
+                          MaterialPageRoute(builder: (context) => PasswordChangePage( username: username)),
                         );
                       },
                     ),
