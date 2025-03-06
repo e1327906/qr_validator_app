@@ -11,8 +11,8 @@ const amplifyconfig = '''{
                 },
                 "CognitoUserPool": {
                     "Default": {
-                        "PoolId": "ap-southeast-1_ytxWGEGkd",
-                        "AppClientId": "228nmabt8o2u6e32keul6v5o0v",
+                        "PoolId": "ap-southeast-1_PM68jth19",
+                        "AppClientId": "4empucsratahsqpl60gb59fnu4",
                         "Region": "ap-southeast-1"
                     }
                 },
