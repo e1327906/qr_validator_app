@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:js_interop_unsafe';
 
 import 'package:dio/dio.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/response_model.dart';
 import '../models/json_property_name.dart';
@@ -36,7 +38,11 @@ class BaseAPIService{
     Dio dio = Dio();
     dio.options.connectTimeout = const Duration(seconds: 60);
     var body = jsonEncode(request);
-    dio.options.headers["X-API-KEY"] = "0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ";
+    //dio.options.headers["X-API-KEY"] = "0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ";
+    // Add the Authorization header with a Bearer token
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString("idToken");
+    dio.options.headers["Authorization"] = "Bearer $token";
 
     try {
       var response = await dio.post(
