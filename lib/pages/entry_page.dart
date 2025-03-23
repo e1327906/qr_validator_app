@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:global_configuration/global_configuration.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_validator_app/models/usage_txn_model.dart';
 import 'package:qr_validator_app/pages/scan_data_page.dart';
+import 'package:qr_validator_app/service/crypto.dart';
 
 class EntryPage extends StatefulWidget {
   const EntryPage({Key? key}) : super(key: key);
@@ -62,6 +67,26 @@ class _EntryPageState extends State<EntryPage> {
         // Do something with the scan data, for example:
         print('Scanned data: ${scanData.code}');
         // Add your logic to handle the scanned data here
+
+        var scanD = scanData.code?.split("#");
+
+        if (scanD != null && scanD.length >= 2) {
+          String? pemPublicKey = GlobalConfiguration().getValue("public_key");
+
+          if (pemPublicKey != null && pemPublicKey.isNotEmpty) {
+            try {
+              RSAPublicKey publicKey = loadPublicKey(pemPublicKey);
+              bool isValid = verifySignature(scanD[1], scanD[0], publicKey);
+              log("Verify Signature : $isValid");
+            } catch (e) {
+              log("Error loading public key: $e");
+            }
+          } else {
+            log("Error: Public key is null or empty.");
+          }
+        } else {
+          log("Error: scanData is null or does not contain expected format.");
+        }
 
         // Always navigate to a new page
         _navigateToNextPage(scanData.code);

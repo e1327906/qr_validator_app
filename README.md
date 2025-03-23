@@ -17,3 +17,10 @@ samples, guidance on mobile development, and a full API reference.
 
 ## build command to prevent reverse-engineer
 - flutter build apk --release --obfuscate --split-debug-info=./debug-info
+
+###
+- keytool -genkeypair -v -keystore release-key.keystore -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=example, OU=example, O=example, L=singapore, S=singapore, C=singapore" -alias example
+- jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA-256 -keystore release-key.keystore app-release.apk example
+- P@ssw0rd
+- apksigner sign --ks release-key.keystore --ks-key-alias example --ks-pass pass:P@ssw0rd --key-pass pass:P@ssw0rd --v2-signing-enabled true --v3-signing-enabled true app-release.apk
+

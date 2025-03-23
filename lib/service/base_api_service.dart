@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:js_interop_unsafe';
-
+import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,8 +40,12 @@ class BaseAPIService{
     var body = jsonEncode(request);
     //dio.options.headers["X-API-KEY"] = "0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ";
     // Add the Authorization header with a Bearer token
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString("idToken");
+    //SharedPreferences prefs = await SharedPreferences.getInstance();
+    final storage = FlutterSecureStorage();
+    // Retrieve token
+    final token = await storage.read(key: 'idToken');
+    log("idToken: $token");
+
     dio.options.headers["Authorization"] = "Bearer $token";
 
     try {

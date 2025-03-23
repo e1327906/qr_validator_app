@@ -1,4 +1,5 @@
 {
-  "qrs_endpoint": "http://192.168.50.169:5500/qr_val_api/api/v1/validator/",
-  "tgs_endpoint": "http://172.16.132.249:8071/qr_gen_api/api/v1/fares/"
+  "qrs_endpoint": "https://a5i6dlwoka.execute-api.ap-southeast-1.amazonaws.com/prod/validator/",
+  "tgs_endpoint": "https://a5i6dlwoka.execute-api.ap-southeast-1.amazonaws.com/prod/fares/",
+  "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt1wpx8AxiEd25KO7zRBv\nxVlaD+CsctCZPV5ifagyQ+UqFYhng7AVLtg04W4P1ApIh+LFLrxNFfuRMGou9Voz\nKtFC1lCW+upzj8DGDANP/mjULEOTtTCPJTMY8vpb1gnFdJWl2nZ5avnK3zZMksQd\nDsjBGjKHYkeJN+RAShHUOsqdWZbKiYVPA1J5+pAqa4XGrfxcZrvRUdGINzLyQ2Hh\nW7SFLvP4A2C3dhdKTMq07PeALkqbrEgRp+wmrvHe1W90Hm0VeD9FehoFjNaHQlEu\nEiyGx0fbZ7iGJjY1UL7mZOwxs4aObvDQHZPx1F0XyM3Yza+MQ33RH3UwGwKjGtNP\nuwIDAQAB\n-----END PUBLIC KEY-----"
 }

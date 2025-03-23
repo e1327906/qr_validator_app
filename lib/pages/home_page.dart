@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:qr_validator_app/pages/entry_page.dart';
 import 'package:qr_validator_app/pages/exit_page.dart';
 import 'package:qr_validator_app/pages/password_change_page.dart';
@@ -49,8 +50,11 @@ class _MyHomePageState extends State<HomePage> {
         final idToken = session.userPoolTokensResult.value.idToken.raw;
         userGroup = _extractUserGroup(idToken);  // Extract the user group from the ID token
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("idToken", idToken);
+        //SharedPreferences prefs = await SharedPreferences.getInstance();
+        //prefs.setString("idToken", idToken);
+        final storage = FlutterSecureStorage();
+        // Store token
+        await storage.write(key: 'idToken', value: idToken);
 
         // Immediately check the user group after getting the session
         _checkUserGroup(userGroup);

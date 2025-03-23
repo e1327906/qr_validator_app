@@ -45,17 +45,32 @@ android {
         applicationId "com.example.qr_validator_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 24
+        //minSdkVersion 24
+        minSdkVersion 29 // Set minimum SDK to Android 10
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-
-    buildTypes {
+    signingConfigs {
         release {
+            storeFile file("release-key.keystore")
+            storePassword "P@ssw0rd"
+            keyAlias "example"
+            keyPassword "P@ssw0rd"
+        }
+    }
+    buildTypes {
+        /*release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+        }*/
+        release {
+            // Ensure both v2 and v3 signature schemes are used
+            signingConfig signingConfigs.release
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }

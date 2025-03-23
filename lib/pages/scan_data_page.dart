@@ -51,29 +51,22 @@ class _ScanDataPageState extends State<ScanDataPage> with SingleTickerProviderSt
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Plain Data'),
-            Tab(text: 'Encrypted Data'),
+            Tab(text: 'Details'),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Keeps the icon and text compact
+                children: [
+                  Icon(Icons.visibility_off, size: 18), // 👁️ Eye icon
+                  SizedBox(width: 6), // Spacing between icon and text
+                ],
+              ),
+            )
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          // Tab 1: QR Data
-          SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: Text(widget.usageTxnModel.qrData),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           // Tab 2: Ticket Details
           SingleChildScrollView(
             child: Padding(
@@ -94,6 +87,21 @@ class _ScanDataPageState extends State<ScanDataPage> with SingleTickerProviderSt
               ),
             ),
           ),
+          // Tab 1: QR Data
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SingleChildScrollView(
+                    child: Text(widget.usageTxnModel.qrData),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
