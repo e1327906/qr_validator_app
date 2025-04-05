@@ -159,7 +159,7 @@ class _AboutPageState extends State<AboutPage> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Your Company Name',
+                'SE32 Students',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
